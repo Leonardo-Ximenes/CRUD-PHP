@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+    <meta charset="UTF-8">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>   
+    
+    <script type="text/javascript">
+        $(document).ready(function(){     
+            var splits = location.search.substring(1).split('=');
+            var cli_id = splits[1];
+ 
+            $.ajax({method: "POST",
+                    url: "../database/buscaCliente.php",
+                    data:{id: cli_id}, 
+                    dataType:'json',
+                    success: function(user){
+                        $('#name').val(user.cli_nome);
+                        $('#cpf').val(user.cli_cpf);
+                        $('#email').val(user.cli_email);
+                        $('#cel_number').val(user.cli_telefone);
+                        $('#cep').val(user.cli_cep);
+                        $('#address').val(user.cli_endereco);
+                        $('#numero').val(user.cli_numero);
+                        $('#complemento').val(user.cli_complemento);
+                        $('#city').val(user.cli_cidade);
+                        $('#state').val(user.cli_estado);                        
+                    }
+            }) 
+            
+        });
+    
+        $(document).ready(function(){
+            $("#btn-edit").click(function(){
+ 
+                var splits = location.search.substring(1).split('=');
+                var cli_id = splits[1];
+ 
+                $.ajax({method: "POST",
+                        url: "../database/editar.php",
+                        data:{id:cli_id,
+                              name:$('#name').val(),
+                              cpf:$('#cpf').val(),
+                              email:$('#email').val(),
+                              cel:$('#cel_number').val(),
+                              cep:$('#cep').val(),
+                              address:$('#address').val(),
+                              number:$('#numero').val(),
+                              complement:$('#complemento').val(),
+                              city:$('#city').val(),
+                              state:$('#state').val(),},           
+                        success: function(user){
+                                window.location.href= '../aplicacao/edit-client.html?id='+cli_id+''
+                        }
+                })
+            });
+        });
+    </script>
+    
+   <script type="text/javascript">
+    function verificaCPF(CPF){
+        exp = /\.|\-/g;
+        var cpf = CPF.toString().replace( exp, "" );
+        var numeros, digitos, soma, i, resultado, digitos_iguais;
+        digitos_iguais = 1;
+        if (cpf.length < 11)
+                return false;
+        for (i = 0; i < cpf.length - 1; i++)
+                if (cpf.charAt(i) != cpf.charAt(i + 1))
+                    {
+                    digitos_iguais = 0;
+                    break;
+                    }
+        if (!digitos_iguais)
+                {
+                numeros = cpf.substring(0,9);
+                digitos = cpf.substring(9);
+                soma = 0;
+                for (i = 10; i > 1; i--)
+                    soma += numeros.charAt(10 - i) * i;
+                resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+                if (resultado != digitos.charAt(0))
+                    return false;
+                numeros = cpf.substring(0,10);
+                soma = 0;
+                for (i = 11; i > 1; i--)
+                    soma += numeros.charAt(11 - i) * i;
+                resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+                if (resultado != digitos.charAt(1))
+                    return false;
+                return true;
+                }
+        else
+                return false;
+    }
+   </script>
+
+    <script>
+        function validaCPF (CPF)
+        {  
+            if(verificaCPF(CPF) == false) 
+            {
+                $('.invalid-feedback').show();
+            }else{
+                $('.invalid-feedback').hide();
+            } 
+        }
+    </script>
+
+
+    <title>Editar Cliente</title>
+</head>
+<body>
+    <div class="container">        
+        <form id="form-create" data-toggle="validator" action="" method="POST">                    
+        <div class="modal-header">
+            <h5 class="modal-title">Editar Cliente</h5>
+        </div>
+        <div class="modal-body">
+            <!-- Bloco 1 -->
+            <div class="form-row">
+                <!-- nome -->
+                <div class="col-md-4 mb-3"> 
+                    <label for="">Nome</label>                              
+                    <input class="form-control" data-maxlength="3" type="text" name="name" id="name">                       
+                    <div class="help-block with-errors"></div> 
+                </div>
+                <!-- cpf -->
+                <div class="col-md-2 mb-3">
+                    <label for="">CPF</label>   
+                    <input type="text" class="form-control" maxlength="14"  onBlur="validaCPF($('#cpf').val());" onkeypress="$(this).mask('000.000.000-00');" id="cpf">                       
+                    <div class="invalid-feedback">
+                        CPF inválido
+                    </div>
+                </div>
+                <!-- Email -->
+                <div class="col-md-6 mb-3">
+                    <label for="">E-mail</label> 
+                    <input class="form-control" type="text" name="email" id="email" >
+                 
+                </div>
+            </div>
+            <!-- Bloco 2 -->
+            <div class="form-row">
+                <!--Celular-->
+                <div class="col-md-4 mb-3">
+                    <label for="">Celular</label>  
+                    <input class="form-control" onkeypress="$(this).mask('(00) 0000-00000')" type="text" name="cel_number" id="cel_number">
+                </div>
+                <!--CEP-->
+                <div class="col-md-2 mb-3">
+                    <label for="">CEP</label>
+                    <input class="form-control" onkeypress="$(this).mask('00.000-000')" type="text" name="cep" id="cep">
+                </div>
+                <!-- Endereco -->               
+                <div class="col-md-6 mb-3">
+                    <label for="">Endereço</label>
+                    <input class="form-control" type="text" name="address" id="address">
+                </div> 
+            </div>
+            <!-- Bloco 3 -->
+            <div class="form-row">
+                <!-- Numero -->
+                <div class="col-md-2 mb-3">
+                    <label for="">Numero</label>
+                    <input class="form-control" type="text" name="numero" id="numero">
+                </div>
+                <!--Complemento-->
+                <div class="col-md-4 mb-3">
+                    <label for="">Complemento</label>
+                    <input class="form-control" type="text" name="complemento" id="complemento">
+                </div>
+                <!--Cidade-->
+                <div class="col-md-4 mb-3">
+                    <label for="">Cidade</label>
+                    <input class="form-control" type="text" name="city" id="city">
+                </div>
+                <!--Estado-->
+                <div class="col-md-2 mb-3">
+                    <label for="">Estado</label>
+                    <input class="form-control" type="text" name="state" id="state">
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="submit" id="btn-edit" class="btn btn-primary">Editar</button>            
+            <a class="btn btn-primary" href="list-cliente.html" role="button">Voltar</a> 
+        </div>
+        </form>
+    </div>  
+    
+    
+   <!-- Optional JavaScript -->
+   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script> 
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.15/jquery.mask.min.js"></script>
+   <script src="js/validator.min.js"></script>
+
+       
+
+
+</body>
+</html>

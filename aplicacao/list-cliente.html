@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+    <meta charset="UTF-8">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        
+</head>
+<body>
+
+    <div class="card-border">
+        <div class="card-body">
+            <h5 class="card-title">Consulta de Alunos</h5>
+                <table class="table table-ordered table-hover" id="clientes">
+                    <thead>
+                        <tr>
+                           <th>ID</th>    
+                            <th>Nome</th>                           
+                            <th>Email</th>
+                            <th>CPF</th>
+                            <th>Telefone</th>
+                            <th>CEP</th>
+                            <th>Endereço</th>
+                            <th>Cidade</th>
+                            <th>Estado</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="clientes">
+                    </tbody>
+                </table>
+        </div>
+        <!-- footer -->
+        <div>
+            <div class="card-footer">
+                <a class="btn btn-primary" href="create-client.html" role="button">Novo Cliente</a> 
+            </div>
+        </div>
+    </div>    
+   <!-- Optional JavaScript -->
+   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script> 
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.15/jquery.mask.min.js"></script>
+   <script src="js/validator.min.js"></script>  
+
+
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+   <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script> 
+   
+   <script>
+       $(document).ready(function(){             
+           loadCliente();   
+       });  
+
+   </script> 
+
+   <script type="text/javascript">
+       function loadCliente(){ 
+           $.ajax({type: "GET",
+                   url: "../database/listar.php",
+                   data:{},           
+                   dataType:'json',
+                   success: function(users){
+                       users.forEach(function(user){
+                           $("#clientes").append('<tr id="row-'+user.cli_id+'"><td>'+user.cli_id+'</td><td><a href="../aplicacao/edit-client.html?id='+user.cli_id+'">'+user.cli_nome+'</a></td><td>'+user.cli_email+'</td><td>'+user.cli_cpf+'</td><td>'+user.cli_telefone+'</td><td>'+user.cli_cep+'</td><td>'+user.cli_endereco+' '+user.cli_numero+' '+user.cli_complemento+'</td><td>'+user.cli_cidade+'</td><td>'+user.cli_estado+'</td><td>'+'<button onClick="excluirCliente('+user.cli_id+');" id="btn-delete" class="btn btn-sm btn-danger">Excluir</button>'+'</td></tr>');
+                       });
+                           }
+                   }) 
+       }
+   </script> 
+
+   <script type="text/javascript">
+           function excluirCliente(id){    
+               var cli_id = id;
+               $.ajax({method: "POST",
+                       url: "../database/deletar.php",
+                       data: {id: cli_id}, 
+                       success: function(data){
+                           $("#row-"+id).remove();
+                       }
+               })                                
+           }
+   </script> 
+     
+</body>
+</html>
+
+
+
